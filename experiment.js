@@ -228,17 +228,41 @@ class Ball {
         ctx_L.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
         ctx_L.stroke();
     }
-    /*
-    updates position of a disk depending on which type of disk it is and where it is on the scren.
-     */
+    /* updates position of a disk depending on which type of trial it is and where it is moving to. */
     updatePosition() {
         if (this.x < halfCanvasWidth) {
             this.x = this.x + velX;
-            if (this.x <= halfCanvasWidth - edgeX) { //these ifs cause vertical movement
+            if (this.x <= halfCanvasWidth - edgeX) { //causes vertical movement
                 this.y = this.y - velY;
             }
         } else {
             this.x = halfCanvasWidth;
+        }
+    }
+};
+
+/* Occluder properties defined by the occluder class */
+class Occluder {
+    constructor(height, y) {
+        this.width = 100; //width -> always the same
+        this.height = height;//height
+        this.x = halfCanvasWidth - 50;//x coord of upper left corner -> always the same
+        this. y = y; //y coord of upper left corner 
+        this.color = "black";
+    }
+
+    draw_occluder() {
+        ctx_L.beginPath();
+        ctx_L.fillStyle = this.color;
+        ctx_L.fillRect(this.x, this.y, this.width, this.height);
+    }
+
+    /* moves top occluder up offscreen and bottom occluder down offscreen*/
+    updatePosition() {
+        if (this.y < halfCanvasHeight) {
+            this.y = this.y - velY;
+        } else {
+            this.y = this.y + velY;
         }
     }
 };
@@ -314,7 +338,7 @@ function style(type) {
             $('#Instruction2').hide();
     }
     $('#canvas_L').show();
-    ctx_L.drawImage(occluder,halfCanvasWidth-50,halfCanvasHeight-225);
+    ctx_L.drawImage(occluder,halfCanvasWidth-50,halfCanvasHeight-225); //makes occluder appear onscreen
     ballA.draw_balls();
    
     stimuliPreview(); 
@@ -383,9 +407,7 @@ function stimuliPreview() { // the phases before the disks and shapes move
             shapeInd_A_pre = trialsInfo[curTrial].shape_A_pre_ind;
         }
             shapeTmp = animationHelper(shapeInd_A_pre)
-            
             ctx_L.drawImage(shapeTmp, ballA.x-27, ballA.y-27)
-
             shapeTmp = animationHelper(shapeInd_B_pre)
 
         myTimeout11 = setTimeout(function() {  
@@ -418,7 +440,7 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
     refresh_stimuliOnset_test ++;
     
     if (refresh_stimuliOnset_test < 76) {
-        ctx_L.drawImage(occluder,halfCanvasWidth-50,halfCanvasHeight-225);
+        ctx_L.drawImage(occluder,halfCanvasWidth-50,halfCanvasHeight-225); //keeps occluder onscreen while disk moves
         myReq = requestAnimationFrame(animate);
     } else { //after this period, occluder becomes two occluders(MODAL) then move offscreen (OSPB + MODAL)
        if (trainingTrial < trialsInfo_training.length) {
