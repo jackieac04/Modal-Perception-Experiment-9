@@ -102,38 +102,51 @@ let vertical_tmp_A;
 let vertical_tmp_array = [-50,+50]; // positions the balls at the bottom of the screen 
 /* generates nrepetitions of different types of trials and pushes them to trialsList */
 function trialGenerator(nRepetitions,trialsList) {
-    for (let i = 0; i < nRepetitions; i++) { //shapes are the same, appear on top disks
-        setShape(2,5,0)
+    //OSPB TRIALS (2 occluders from the start, location of moving disk is known to participant)
+    for (let i = 0; i < nRepetitions; i++) { //top,congruent,match,OSPB
+        setShape(1,5,0)
         setTMP()
-        pushTrialInfo(trialsList, "spatiotemporal", "match")      
+        pushTrialInfo(trialsList, "OSPB", "top", "congruent", "match")      
+    }
+    for (let i = 0; i < nRepetitions; i++) { //top,congruent,new,OSPB
+        setShape(2,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
+        setTMP()
+        pushTrialInfo(trialsList, "OSPB", "top", "congruent", "new")
     }
 
-    for (let i = 0; i < nRepetitions; i++) { //one shape is different, appear on top disks
-        setShape(3,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
+    for (let i = 0; i < nRepetitions; i++) { //top,incongruent,match,OSPB
+        setShape(1,5,0) 
         setTMP()
-        pushTrialInfo(trialsList, "spatiotemporal", "new")
+        pushTrialInfo(trialsList, "OSPB", "top", "incongruent", "match")
+    }
+    for (let i = 0; i < nRepetitions; i++) { //top,incongruent,new,OSPB
+        setShape(2,5,1)
+        setTMP()
+        pushTrialInfo(trialsList, "OSPB", "top", "incongruent", "new") 
+    } 
+    for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,match,OSPB
+        setShape(1,5,0)
+        setTMP()
+        pushTrialInfo(trialsList, "OSPB", "bottom", "congruent", "match")      
+    }
+    for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,new,OSPB
+        setShape(2,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
+        setTMP()
+        pushTrialInfo(trialsList, "OSPB", "bottom", "congruent", "new")
+    }
+    for (let i = 0; i < nRepetitions; i++) { //bottom,incongruent,new,OSPB
+        setShape(1,5,0) 
+        setTMP()
+        pushTrialInfo(trialsList, "OSPB", "bottom", "incongruent", "match")
+    }
+    for (let i = 0; i < nRepetitions; i++) { //bottom,incongruent,match,OSPB
+        setShape(2,5,1)
+        setTMP()
+        pushTrialInfo(trialsList, "OSPB", "bottom", "incongruent", "new") 
     }
 
-    for (let i = 0; i < nRepetitions; i++) { //shapes are swapped, appear on top disks
-        setShape(2,5,0) 
-        setTMP()
-        pushTrialInfo(trialsList, "spatiotemporal", "swap")
-    }
-    for (let i = 0; i < nRepetitions; i++) { //shapes are the same, appear on bottom disks
-        setShape(2,5,0)
-        setTMP()
-        pushTrialInfo(trialsList, "non_spatiotemporal", "match") 
-    }
-    for (let i = 0; i < nRepetitions; i++) { //one shape is different, appear on bottom disks
-        setShape(3,5,1)
-        setTMP()
-        pushTrialInfo(trialsList, "non_spatiotemporal", 'new')
-    }
-    for (let i = 0; i < nRepetitions; i++) { //shapes are swapped, appear on bottom disks
-        setShape(2,5,0) //randomly selects 2 shapes from up to 5, then swaps them on the bottom circles
-        setTMP()
-        pushTrialInfo(trialsList, "non_spatiotemporal", "swap")
-    }
+    //MODAL TRIALS (wonky movement- the location of the disks is unknown at the beginning, then the occluder splits in two)
+
     trialsList = shuffle(trialsList);
     return trialsList;
 }
@@ -159,9 +172,11 @@ function setTMP() {
         vertical_tmp_A = vertical_tmp_array[vertical[0]];
     }
 /* pushes info about each trial to the database. */
-function pushTrialInfo(trialsList, spatioType, matchType) {
+function pushTrialInfo(trialsList, trialType, diskLocation, spatioType, matchType) {
     trialsList.push({ //pushes info about each trial to the database
         "spatiotemporalType":spatioType,
+        "trialType": trialType,
+        "diskLocation": diskLocation,
         "matchType": matchType,
         "shape_A_pre_ind":shape_A_preview_tmp,
         "shape_A_test_ind":shape_A_test_tmp,
@@ -198,42 +213,45 @@ function shuffle(o){
 }
 
 /* Disk properties are defined by Ball class and properties. */
-function Ball(x,y,color,size) {
-    this.x = x; //width
-    this.y = y; //height
-    this.color = color;
-    this.size = size;
-};
-const nDots = 1; 
-const dotRadius = 40; //Radius of each dot in pixels
-let AWidth = halfCanvasWidth - 230;
-let AHeight =  halfCanvasHeight - 125;
-
-/* draws disks on the canvas. */
-Ball.prototype.draw_balls = function() {
-    ctx_L.beginPath();
-    ctx_L.strokeStyle = this.color;
-    ctx_L.lineWidth = 5;
-    ctx_L.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-    ctx_L.stroke();
-};
-
-let velX = 4.5;
-let velY = 1.5;
-let edgeX = 100;
-/* 
-updates position of a disk depending on which type of disk it is and where it is on the scren.
- */
-Ball.prototype.updatePosition = function() {
+class Ball {
+    constructor(x, y, color, size) {
+        this.x = x; //width
+        this.y = y; //height
+        this.color = color;
+        this.size = size;
+    }
+    /* draws disks on the canvas. */
+    draw_balls() {
+        ctx_L.beginPath();
+        ctx_L.strokeStyle = this.color;
+        ctx_L.lineWidth = 5;
+        ctx_L.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+        ctx_L.stroke();
+    }
+    /*
+    updates position of a disk depending on which type of disk it is and where it is on the scren.
+     */
+    updatePosition() {
         if (this.x < halfCanvasWidth) {
             this.x = this.x + velX;
             if (this.x <= halfCanvasWidth - edgeX) { //these ifs cause vertical movement
                 this.y = this.y - velY;
             }
-       } else {
-           this.x = halfCanvasWidth;
-       }
-  };
+        } else {
+            this.x = halfCanvasWidth;
+        }
+    }
+};
+
+const nDots = 1; 
+const dotRadius = 40; //Radius of each dot in pixels
+let AWidth = halfCanvasWidth - 230;
+let AHeight =  halfCanvasHeight - 125;
+
+
+let velX = 4.5;
+let velY = 1.5;
+let edgeX = 100;
 //experiment procedures
 function showInstructions() {
     $('#consent').hide();
@@ -384,12 +402,8 @@ let refresh_stimuliOnset_test = 0; //DO NOT make these const - even though they 
 let myTimeout;
 let myReq;
 let startResponseTiming = false;
-let occluder_velX = 0;
-let occluder_velY = 40;
-let occluder_posX = 0;
-let occluder_posY = 40;
 
-function animate() { // make the disks and the shapes move together and occluder
+function animate() { // make the disks and the shapes move together and occluders move off screen 
     myTimeout = setTimeout (function() {     
     ctx_L.fillStyle = 'gray';
     ctx_L.clearRect(0,0,canvas_L.width, canvas_L.height);
@@ -405,9 +419,8 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
     
     if (refresh_stimuliOnset_test < 76) {
         ctx_L.drawImage(occluder,halfCanvasWidth-50,halfCanvasHeight-225);
-        occluder_posY = 40;
         myReq = requestAnimationFrame(animate);
-    } else { //after this period, occluder is removed
+    } else { //after this period, occluder becomes two occluders(MODAL) then move offscreen (OSPB + MODAL)
        if (trainingTrial < trialsInfo_training.length) {
             shapeInd_A_test = trialsInfo_training[trainingTrial].shape_A_test_ind;
         }
@@ -420,8 +433,8 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
          if (refresh_stimuliOnset_test === 84) { 
 
             setTimeout(function() {
-                if ((trialsInfo_training[trainingTrial] && trialsInfo_training[trainingTrial].spatiotemporalType === "non_spatiotemporal")
-                 || (trialsInfo[curTrial] && trialsInfo[curTrial].spatiotemporalType === "non_spatiotemporal")) { //swap
+                if ((trialsInfo_training[trainingTrial] && trialsInfo_training[trainingTrial].spatiotemporalType === "incongruent")
+                 || (trialsInfo[curTrial] && trialsInfo[curTrial].spatiotemporalType === "incongruent")) { //swap
                     //ball should show up behind the wrong occluder
                     ctx_L.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
                  } else {
