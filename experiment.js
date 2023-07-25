@@ -251,6 +251,7 @@ class Occluder {
         this.color = "black";
     }
 
+    /* Draws occluders with the given specifications on the screen. */
     draw_occluder() {
         ctx_L.beginPath();
         ctx_L.fillStyle = this.color;
@@ -259,10 +260,10 @@ class Occluder {
 
     /* moves top occluder up offscreen and bottom occluder down offscreen*/
     updatePosition() {
-        if (this.y < halfCanvasHeight) {
-            this.y = this.y - velY;
+        if (this.y < 51) { //51 is the pos of the top occluder
+            this.y = this.y - (9 * velY);
         } else {
-            this.y = this.y + velY;
+            this.y = this.y + (9 * velY);
         }
     }
 };
@@ -461,6 +462,7 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
     refresh_stimuliOnset_test ++;
     
     if (refresh_stimuliOnset_test < 76) {
+        //keeps occluders on screen while disk moves
         if (trialsInfo_training[trainingTrial].trialType === "OSPB" || trialsInfo[curTrial].trialType === "OSPB") {
             occluderA.draw_occluder()
             occluderB.draw_occluder()
@@ -469,11 +471,11 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
         }
         myReq = requestAnimationFrame(animate);
     } else { //after this period, occluder becomes two occluders(MODAL) then move offscreen (OSPB + MODAL)
-        //if OSPB {
-            // move top one up and bottom one down
-        //} else {
-            // 
-        //}
+            // moves top one up, bottom one down
+            occluderA.draw_occluder()
+            occluderB.draw_occluder()
+            occluderA.updatePosition()
+            occluderB.updatePosition()
        if (trainingTrial < trialsInfo_training.length) {
             shapeInd_A_test = trialsInfo_training[trainingTrial].shape_A_test_ind;
         }
@@ -483,7 +485,7 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
         }
         shapeTmpA = animationHelper(shapeInd_A_test)
 
-         if (refresh_stimuliOnset_test === 84) { 
+         if (refresh_stimuliOnset_test === 100) { 
 
             setTimeout(function() {
                 if ((trialsInfo_training[trainingTrial] && trialsInfo_training[trainingTrial].spatiotemporalType === "incongruent")
