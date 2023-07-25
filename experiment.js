@@ -320,11 +320,23 @@ function generateNewBallsHelper(x, y) {
     );
     return ballA;
 }
+
+let occluderA;
+let occluderB;
+let occluderC;
+/* Helper used to create new occluders.*/
+function generateNewOccluder(height, y) {
+    let occluder = new Occluder(
+        height,
+        y
+    )
+    return occluder;
+}
 /* 
 Styles the screen based on if the experiment is in the training session or the
  test section.
 */
-function style(type) {
+function style(type, trial, trialVal) {
     if (type !== 'a') {
         ctx_L.fillStyle = 'gray';
         ctx_L.clearRect(0,0,canvas_L.width, canvas_L.height)
@@ -338,7 +350,16 @@ function style(type) {
             $('#Instruction2').hide();
     }
     $('#canvas_L').show();
-    ctx_L.drawImage(occluder,halfCanvasWidth-50,halfCanvasHeight-225); //makes occluder appear onscreen
+    if (trial[trialVal].trialType === "OSPB") {
+        //draw 2 occluders
+        occluderA = generateNewOccluder(100, halfCanvasHeight-225)
+        occluderB = generateNewOccluder(100, halfCanvasHeight-100)
+        occluderA.draw_occluder()
+        occluderB.draw_occluder()
+    } else {
+        occluderC = generateNewOccluder(200, halfCanvasHeight-225)
+        occluderC.draw_occluder()
+    }
     ballA.draw_balls();
    
     stimuliPreview(); 
@@ -352,7 +373,7 @@ function showTrials(type) {
         case 'a':
             instructions('#title', '#Instruction2', '#startTrainingButton', 'a')
             ballA = generateNewBallsHelper(AWidth, AHeight);
-            style('a')
+            style('a', trialsInfo_training, trainingTrial)
             break;
 
         case 'b':
@@ -360,7 +381,7 @@ function showTrials(type) {
     
             if (trainingTrial < trialsInfo_training.length) {
                 ballA = generateNewBallsHelper(AWidth, AHeight);
-                style('b')
+                style('b', trialsInfo_training, trainingTrial)
             } else {
                 $('#InstructionPractice').hide();
                 $('#Instruction3').show();
@@ -371,7 +392,7 @@ function showTrials(type) {
         case 'c':
             instructions('#title', '#Instruction3', '#startExpButton', 'c')
             ballA = generateNewBallsHelper(AWidth, AHeight);
-            style('c')
+            style('c', trialsInfo, curTrial)
             break;
 
         case 'd':
@@ -379,7 +400,7 @@ function showTrials(type) {
 
             if (curTrial < trialsInfo.length) {
                 ballA = generateNewBallsHelper(AWidth, AHeight);
-                style('d')
+                style('d', trialsInfo, curTrial)
             } else {
                 $('#Instruction5').show();
                 $('#submitButton').show();
@@ -440,9 +461,19 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
     refresh_stimuliOnset_test ++;
     
     if (refresh_stimuliOnset_test < 76) {
-        ctx_L.drawImage(occluder,halfCanvasWidth-50,halfCanvasHeight-225); //keeps occluder onscreen while disk moves
+        if (trialsInfo_training[trainingTrial].trialType === "OSPB" || trialsInfo[curTrial].trialType === "OSPB") {
+            occluderA.draw_occluder()
+            occluderB.draw_occluder()
+        } else {
+            occluderC.draw_occluder()
+        }
         myReq = requestAnimationFrame(animate);
     } else { //after this period, occluder becomes two occluders(MODAL) then move offscreen (OSPB + MODAL)
+        //if OSPB {
+            // move top one up and bottom one down
+        //} else {
+            // 
+        //}
        if (trainingTrial < trialsInfo_training.length) {
             shapeInd_A_test = trialsInfo_training[trainingTrial].shape_A_test_ind;
         }
