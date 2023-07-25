@@ -229,16 +229,25 @@ class Ball {
         ctx_L.stroke();
     }
     /* updates position of a disk depending on which type of trial it is and where it is moving to. */
+  
     updatePosition() {
-        if (this.x < halfCanvasWidth) {
-            this.x = this.x + velX;
-            if (this.x <= halfCanvasWidth - edgeX) { //causes vertical movement
-                this.y = this.y - velY;
+        if (trialsInfo_training[trainingTrial].trialType === "OSPB" || trialsInfo[curTrial].trialType === "OSPB") { //IF OSPB
+            if (this.x < halfCanvasWidth) { //if x pos is left side
+                this.x = this.x + velX;
+                console.log(trialsInfo_training[trainingTrial].diskLocation)
+                if ((trialsInfo_training[trainingTrial].diskLocation === "bottom" && trainingTrial < trialsInfo_training.length)
+             || (trialsInfo[curTrial].diskLocation === "bottom" && trainingTrial >= trialsInfo_training.length)) { //if trial type is bottom
+                    this.y = this.y + 1.6;
+            }   else { //if trial type is top
+                this.y = this.y - 1.1;
             }
+        }   else { //if x pos is middle or right
+                this.x = halfCanvasWidth;
+        } 
         } else {
-            this.x = halfCanvasWidth;
+            //wonky mvmnt for MODAL
         }
-    }
+    };
 };
 
 /* Occluder properties defined by the occluder class */
