@@ -230,13 +230,11 @@ class Ball {
     }
     /* updates position of a disk depending on which type of trial it is and where it is moving to. */
   
-    updatePosition() {
-        if (trialsInfo_training[trainingTrial].trialType === "OSPB" || trialsInfo[curTrial].trialType === "OSPB") { //IF OSPB
+    updatePosition(trial, trialVal) {
+        if ((trial[trialVal].trialType === "OSPB")) { //IF OSPB
             if (this.x < halfCanvasWidth) { //if x pos is left side
                 this.x = this.x + velX;
-                console.log(trialsInfo_training[trainingTrial].diskLocation)
-                if ((trialsInfo_training[trainingTrial].diskLocation === "bottom" && trainingTrial < trialsInfo_training.length)
-             || (trialsInfo[curTrial].diskLocation === "bottom" && trainingTrial >= trialsInfo_training.length)) { //if trial type is bottom
+                if (trial[trialVal].diskLocation === "bottom") { //if trial type is bottom
                     this.y = this.y + 1.6;
             }   else { //if trial type is top
                 this.y = this.y - 1.1;
@@ -248,7 +246,20 @@ class Ball {
             //wonky mvmnt for MODAL
         }
     };
-};
+
+    updateCongruence(trial, trialVal) {
+        if (trial[trialVal].spatiotemporalType === "incongruent") { //if trial type is incongruent
+            
+            if (trial[trialVal].diskLocation === "bottom") { //if trial type is bottom
+                //set top
+                this.y = 93;
+        } else {
+            //set bottom
+            this.y = 233;
+            }
+        }   
+    };
+}
 
 /* Occluder properties defined by the occluder class */
 class Occluder {
@@ -372,7 +383,7 @@ function style(type, trial, trialVal) {
     }
     ballA.draw_balls();
    
-    stimuliPreview(); 
+    stimuliPreview(trial, trialVal); 
 }
 
 let trainingTrial = 0;
@@ -429,37 +440,40 @@ let shapeInd_B_test;
 const colorDisk = 500; 
 const previewShape = 1200; //length the shapes appear for each trial in milliseconds
 
-function stimuliPreview() { // the phases before the disks and shapes move
-    myTimeout10 = setTimeout(function() {
-        if (trainingTrial <= trialsInfo_training.length-1) {
-            shapeInd_A_pre = trialsInfo_training[trainingTrial].shape_A_pre_ind; 
+async function stimuliPreview(trial, trialVal) { // the phases before the disks and shapes move
+    await new Promise((resolve) => {
+    myTimeout10 = setTimeout(function () {
+        if (trainingTrial <= trialsInfo_training.length - 1) {
+          shapeInd_A_pre = trialsInfo_training[trainingTrial].shape_A_pre_ind;
         }
-        if (trainingTrial === trialsInfo_training.length && curTrial>=0) {
-            shapeInd_A_pre = trialsInfo[curTrial].shape_A_pre_ind;
+        if (trainingTrial === trialsInfo_training.length && curTrial >= 0) {
+          shapeInd_A_pre = trialsInfo[curTrial].shape_A_pre_ind;
         }
-            shapeTmp = animationHelper(shapeInd_A_pre)
-            ctx_L.drawImage(shapeTmp, ballA.x-27, ballA.y-27)
-            shapeTmp = animationHelper(shapeInd_B_pre)
-
-        myTimeout11 = setTimeout(function() {  
-            ballA.draw_balls();
-
-            myTimeout12 = setTimeout(function() {
-                animate();
-            },colorDisk)
-        },previewShape)
-    },colorDisk)
-}
-
+        shapeTmp = animationHelper(shapeInd_A_pre);
+        ctx_L.drawImage(shapeTmp, ballA.x - 27, ballA.y - 27);
+        shapeTmp = animationHelper(shapeInd_B_pre);
+  
+        myTimeout11 = setTimeout(function () {
+          ballA.draw_balls();
+  
+          myTimeout12 = setTimeout(function () {
+            animate(trial, trialVal);
+            resolve(); // Resolve the promise to indicate that this iteration of stimuliPreview is complete.
+          }, colorDisk);
+        }, previewShape);
+      }, colorDisk);
+    });
+  }
 let refresh_stimuliOnset_test = 0; //DO NOT make these const - even though they don't change it causes the occluder to disappear
 let myTimeout;
 let myReq;
 let startResponseTiming = false;
 
-function animate() { // make the disks and the shapes move together and occluders move off screen 
+function animate(trial, trialVal) { // make the disks and the shapes move together and occluders move off screen 
     myTimeout = setTimeout (function() {     
     ctx_L.fillStyle = 'gray';
     ctx_L.clearRect(0,0,canvas_L.width, canvas_L.height);
+    
 if (trainingTrial < trialsInfo_training.length) {
     vertical_tmp_A = trialsInfo_training[trainingTrial].ball_A_vertical;
 }
@@ -467,18 +481,18 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
     vertical_tmp_A = trialsInfo[curTrial].ball_A_vertical;
 }
     ballA.draw_balls();
-    ballA.updatePosition();
+    ballA.updatePosition(trial, trialVal);
     refresh_stimuliOnset_test ++;
     
     if (refresh_stimuliOnset_test < 76) {
         //keeps occluders on screen while disk moves
-        if (trialsInfo_training[trainingTrial].trialType === "OSPB" || trialsInfo[curTrial].trialType === "OSPB") {
+        if (trial[trialVal].trialType === "OSPB") {
             occluderA.draw_occluder()
             occluderB.draw_occluder()
         } else {
             occluderC.draw_occluder()
         }
-        myReq = requestAnimationFrame(animate);
+        myReq = requestAnimationFrame(() => animate(trial, trialVal));
     } else { //after this period, occluder becomes two occluders(MODAL) then move offscreen (OSPB + MODAL)
             // moves top one up, bottom one down
             occluderA.draw_occluder()
@@ -493,6 +507,7 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
             shapeInd_A_test = trialsInfo[curTrial].shape_A_test_ind;
         }
         shapeTmpA = animationHelper(shapeInd_A_test)
+        ballA.updateCongruence(trial, trialVal);
 
          if (refresh_stimuliOnset_test === 100) { 
 
@@ -508,10 +523,11 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
                  responseAcceptable = true; // only allow response when the occluder is removed/equivalent time in no occluder condition
                 }, 1000);
          }  else {
-            myReq = requestAnimationFrame(animate); 
+            myReq = requestAnimationFrame(() => animate(trial, trialVal));
             }
     }  
     }, freshRate)
+    cancelAnimationFrame(myReq)
 }
 /* 
 Given value, chooses which of 5 shapes to display.
