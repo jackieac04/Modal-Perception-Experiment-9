@@ -100,7 +100,13 @@ let shape_A_preview_tmp;
 let shape_A_test_tmp;
 let vertical_tmp_A;
 let vertical_tmp_array = [-50,+50]; // positions the balls at the bottom of the screen 
-/* generates nrepetitions of different types of trials and pushes them to trialsList */
+
+/* generates nrepetitions of different types of trials and pushes them to trialsList
+location: the direction the disk moves in
+congruence: whether it shows up in  the location it moved in or the opposite location
+match type: whether the shape on the disk is the same or different
+trial type: OSPB (two occluders, known location) / MODAL (one occluder that splits in two, unknown location)
+*/
 function trialGenerator(nRepetitions,trialsList) {
     //OSPB TRIALS (2 occluders from the start, location of moving disk is known to participant)
     for (let i = 0; i < nRepetitions; i++) { //top,congruent,match,OSPB
@@ -190,9 +196,9 @@ function pushTrialInfo(trialsList, trialType, diskLocation, spatioType, matchTyp
     }); 
 }
 /*
-There are 153 total trials due to the three for loops each being run until the limit
-of nRepetitions (51). This is to ensure there are the same number of each different
-type of trial (match, swap, new). 
+There are 51 * n total trials due to the three for loops each being run until the limit
+of nRepetitions. This is to ensure there are the same number of each different
+type of trial (match, new / congruent, incongruent / top, bottom). 
 */
 let trialsInfo = []; //holds the information for the trials
 const nRepetitions = 51; //number of each type (3) of trial = 51 * 3 = 153 trials
