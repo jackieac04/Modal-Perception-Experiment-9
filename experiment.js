@@ -109,49 +109,70 @@ trial type: OSPB (two occluders, known location) / MODAL (one occluder that spli
 */
 function trialGenerator(nRepetitions,trialsList) {
     //OSPB TRIALS (2 occluders from the start, location of moving disk is known to participant)
-    for (let i = 0; i < nRepetitions; i++) { //top,congruent,match,OSPB
-        setShape(1,5,0)
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "top", "congruent", "match")      
-    }
-    for (let i = 0; i < nRepetitions; i++) { //top,congruent,new,OSPB
-        setShape(2,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "top", "congruent", "new")
-    }
+    // for (let i = 0; i < nRepetitions; i++) { //top,congruent,match,OSPB
+    //     setShape(1,5,0)
+    //     setTMP()
+    //     pushTrialInfo(trialsList, "OSPB", "top", "congruent", "match")      
+    // }
+    // for (let i = 0; i < nRepetitions; i++) { //top,congruent,new,OSPB
+    //     setShape(2,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
+    //     setTMP()
+    //     pushTrialInfo(trialsList, "OSPB", "top", "congruent", "new")
+    // }
 
-    for (let i = 0; i < nRepetitions; i++) { //top,incongruent,match,OSPB
-        setShape(1,5,0) 
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "top", "incongruent", "match")
-    }
-    for (let i = 0; i < nRepetitions; i++) { //top,incongruent,new,OSPB
-        setShape(2,5,1)
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "top", "incongruent", "new") 
-    } 
-    for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,match,OSPB
-        setShape(1,5,0)
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "bottom", "congruent", "match")      
-    }
-    for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,new,OSPB
-        setShape(2,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "bottom", "congruent", "new")
-    }
-    for (let i = 0; i < nRepetitions; i++) { //bottom,incongruent,new,OSPB
-        setShape(1,5,0) 
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "bottom", "incongruent", "match")
-    }
-    for (let i = 0; i < nRepetitions; i++) { //bottom,incongruent,match,OSPB
-        setShape(2,5,1)
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "bottom", "incongruent", "new") 
-    }
+    // for (let i = 0; i < nRepetitions; i++) { //top,incongruent,match,OSPB
+    //     setShape(1,5,0) 
+    //     setTMP()
+    //     pushTrialInfo(trialsList, "OSPB", "top", "incongruent", "match")
+    // }
+    // for (let i = 0; i < nRepetitions; i++) { //top,incongruent,new,OSPB
+    //     setShape(2,5,1)
+    //     setTMP()
+    //     pushTrialInfo(trialsList, "OSPB", "top", "incongruent", "new") 
+    // } 
+    // for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,match,OSPB
+    //     setShape(1,5,0)
+    //     setTMP()
+    //     pushTrialInfo(trialsList, "OSPB", "bottom", "congruent", "match")      
+    // }
+    // for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,new,OSPB
+    //     setShape(2,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
+    //     setTMP()
+    //     pushTrialInfo(trialsList, "OSPB", "bottom", "congruent", "new")
+    // }
+    // for (let i = 0; i < nRepetitions; i++) { //bottom,incongruent,new,OSPB
+    //     setShape(1,5,0) 
+    //     setTMP()
+    //     pushTrialInfo(trialsList, "OSPB", "bottom", "incongruent", "match")
+    // }
+    // for (let i = 0; i < nRepetitions; i++) { //bottom,incongruent,match,OSPB
+    //     setShape(2,5,1)
+    //     setTMP()
+    //     pushTrialInfo(trialsList, "OSPB", "bottom", "incongruent", "new") 
+    // }
 
     //MODAL TRIALS (wonky movement- the location of the disks is unknown at the beginning, then the occluder splits in two)
+    //congruence is set to null because there is no way to determine if the movement is congruent or not.
+    for (let i = 0; i < nRepetitions; i++) { //top,incongruent,match,MODAL
+        setShape(1,5,0) 
+        setTMP()
+        pushTrialInfo(trialsList, "MODAL", "top", null, "match")
+    }
+    for (let i = 0; i < nRepetitions; i++) { //top,incongruent,new,MODAL
+        setShape(2,5,1)
+        setTMP()
+        pushTrialInfo(trialsList, "MODAL", "top", null, "new") 
+    } 
+    for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,match,MODAL
+        setShape(1,5,0)
+        setTMP()
+        pushTrialInfo(trialsList, "MODAL", "bottom", null, "match")      
+    }
+    for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,new,MODAL
+        setShape(2,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
+        setTMP()
+        pushTrialInfo(trialsList, "MODAL", "bottom", null, "new")
+    }
 
     trialsList = shuffle(trialsList);
     return trialsList;
@@ -195,6 +216,13 @@ function pushTrialInfo(trialsList, trialType, diskLocation, spatioType, matchTyp
         "reactTime":"null",
     }); 
 }
+
+/* Fisher-Yates shuffle- used to shuffle trials so they appear random. */
+function shuffle(o){
+    for(let j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+        return o;
+}
+
 /*
 There are 51 * n total trials due to the three for loops each being run until the limit
 of nRepetitions. This is to ensure there are the same number of each different
@@ -208,15 +236,6 @@ let trialsInfo_training = []; //holds info for training trials
 const nRepetitions_training = 1; //number of each type (3) of trial = 51* 3 = 3 trials
 trialsInfo_training = trialGenerator(nRepetitions_training,trialsInfo_training);
 const subjectID = getSubjectID();
-
-//---------------------------------------
-//-----------FUNCTIONS BEGIN-------------
-//---------------------------------------
-/* Fisher-Yates shuffle- used to shuffle trials so they appear random. */
-function shuffle(o){
-    for(let j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-        return o;
-}
 
 /* Disk properties are defined by Ball class and properties. */
 class Ball {
@@ -250,20 +269,53 @@ class Ball {
         } 
         } else {
             //wonky mvmnt for MODAL
+            if (this.x < halfCanvasWidth) {
+                this.x = this.x + velX;
+                if (this.x < AWidth + dotRadius / 4) {
+                  this.y = this.y + 10;
+                }
+                if (AWidth + dotRadius / 4 <= this.x && this.x < AWidth + dotRadius / 2) {
+                  this.y = this.y + 15;
+                }
+                if (AWidth + dotRadius / 2 <= this.x && this.x < AWidth + 1.5 * dotRadius) {
+                  this.y = this.y - 3;
+                }
+                if (AWidth + 1.5 * dotRadius <= this.x && this.x < AWidth + 2 * dotRadius) {
+                  this.y = this.y;
+                }
+                if (AWidth + 2 * dotRadius <= this.x && this.x < AWidth + 3 * dotRadius) {
+                  this.y = this.y - 3;
+                }
+                if (AWidth + 3 * dotRadius <= this.x && this.x < halfCanvasWidth) {
+                  this.y = halfCanvasHeight - 100;
+                }
+              } else {
+                this.x = halfCanvasWidth;
+                this.y = halfCanvasHeight - 55;
+              }
         }
     };
 
     updateCongruence(trial, trialVal) {
-        if (trial[trialVal].spatiotemporalType === "incongruent") { //if trial type is incongruent
-            
-            if (trial[trialVal].diskLocation === "bottom") { //if trial type is bottom
-                //set top
-                this.y = 93;
-        } else {
-            //set bottom
-            this.y = 233;
+        return new Promise((resolve) => {
+            if (trial[trialVal].trialType === "OSPB"){
+                if (trial[trialVal].spatiotemporalType === "incongruent") { //if trial type is incongruent
+                    if (trial[trialVal].diskLocation === "bottom") { //if trial type is bottom
+                        this.y = 93; //set top
+                    } else {
+                    this.y = 233; //set bottom
+                    }
+                }  
+            } else {
+                if (trial[trialVal].diskLocation ==="bottom") {
+                    this.y = halfCanvasHeight - 55;
+                } else {
+                    this.y = halfCanvasHeight - 175;
+                }
             }
-        }   
+            // Resolve the Promise once the asynchronous task is completed
+            resolve();
+          });
     };
 }
 
@@ -298,7 +350,6 @@ const nDots = 1;
 const dotRadius = 40; //Radius of each dot in pixels
 let AWidth = halfCanvasWidth - 230;
 let AHeight =  halfCanvasHeight - 125;
-
 
 let velX = 4.5;
 let velY = 1.5;
@@ -384,7 +435,7 @@ function style(type, trial, trialVal) {
         occluderA.draw_occluder()
         occluderB.draw_occluder()
     } else {
-        occluderC = generateNewOccluder(200, halfCanvasHeight-225)
+        occluderC = generateNewOccluder(225, halfCanvasHeight-225)
         occluderC.draw_occluder()
     }
     ballA.draw_balls();
@@ -476,7 +527,7 @@ let myReq;
 let startResponseTiming = false;
 
 function animate(trial, trialVal) { // make the disks and the shapes move together and occluders move off screen 
-    myTimeout = setTimeout (function() {     
+    myTimeout = setTimeout (async function() {     
     ctx_L.fillStyle = 'gray';
     ctx_L.clearRect(0,0,canvas_L.width, canvas_L.height);
     
@@ -499,8 +550,12 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
             occluderC.draw_occluder()
         }
         myReq = requestAnimationFrame(() => animate(trial, trialVal));
+    
     } else { //after this period, occluder becomes two occluders(MODAL) then move offscreen (OSPB + MODAL)
             // moves top one up, bottom one down
+            await ballA.updateCongruence(trial, trialVal);
+            occluderA = generateNewOccluder(100, halfCanvasHeight-225)
+            occluderB = generateNewOccluder(100, halfCanvasHeight-100)
             occluderA.draw_occluder()
             occluderB.draw_occluder()
             occluderA.updatePosition()
@@ -513,7 +568,6 @@ if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length
             shapeInd_A_test = trialsInfo[curTrial].shape_A_test_ind;
         }
         shapeTmpA = animationHelper(shapeInd_A_test)
-        ballA.updateCongruence(trial, trialVal);
 
          if (refresh_stimuliOnset_test === 100) { 
 
