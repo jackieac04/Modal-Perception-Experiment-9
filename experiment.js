@@ -125,11 +125,7 @@ function trialGenerator(nRepetitions,trialsList) {
         setTMP()
         pushTrialInfo(trialsList, "OSPB", "top", "incongruent", "match")
     }
-    for (let i = 0; i < nRepetitions; i++) { //top,incongruent,new,OSPB
-        setShape(2,5,1)
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "top", "incongruent", "new") 
-    } 
+
     for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,match,OSPB
         setShape(1,5,0)
         setTMP()
@@ -139,11 +135,6 @@ function trialGenerator(nRepetitions,trialsList) {
         setShape(2,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
         setTMP()
         pushTrialInfo(trialsList, "OSPB", "bottom", "congruent", "new")
-    }
-    for (let i = 0; i < nRepetitions; i++) { //bottom,incongruent,new,OSPB
-        setShape(1,5,0) 
-        setTMP()
-        pushTrialInfo(trialsList, "OSPB", "bottom", "incongruent", "match")
     }
     for (let i = 0; i < nRepetitions; i++) { //bottom,incongruent,match,OSPB
         setShape(2,5,1)
@@ -158,17 +149,17 @@ function trialGenerator(nRepetitions,trialsList) {
         setTMP()
         pushTrialInfo(trialsList, "MODAL", "top", null, "match")
     }
-    for (let i = 0; i < nRepetitions; i++) { //top,incongruent,new,MODAL
+    for (let i = 0; i < nRepetitions; i++) { //top,,new,MODAL
         setShape(2,5,1)
         setTMP()
         pushTrialInfo(trialsList, "MODAL", "top", null, "new") 
     } 
-    for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,match,MODAL
+    for (let i = 0; i < nRepetitions; i++) { //bottom,,match,MODAL
         setShape(1,5,0)
         setTMP()
         pushTrialInfo(trialsList, "MODAL", "bottom", null, "match")      
     }
-    for (let i = 0; i < nRepetitions; i++) { //bottom,congruent,new,MODAL
+    for (let i = 0; i < nRepetitions; i++) { //bottom,,new,MODAL
         setShape(2,5,1) //selects 3 shapes from 5 randomly, then replaces one of the original shapes with a new one
         setTMP()
         pushTrialInfo(trialsList, "MODAL", "bottom", null, "new")
@@ -341,7 +332,7 @@ class Occluder {
         if (this.y < 51) { //51 is the pos of the top occluder
             this.y = this.y - (9 * velY);
         } else {
-            this.y = this.y + (9 * velY);
+            this.y = this.y + (9* velY);
         }
     }
 };
@@ -579,26 +570,42 @@ if (trainingTrial === trialsInfoTraining.length && curTrial < trialsInfo.length)
             shapeIndATest = trialsInfo[curTrial].shapeATestInd;
         }
         shapeTmpA = animationHelper(shapeIndATest)
+        shapeAppearance(trial, trialVal)
 
          if (refresh === 100) { 
-
-            setTimeout(function() {
-                if ((trialsInfoTraining[trainingTrial] && trialsInfoTraining[trainingTrial].spatiotemporalType === "incongruent")
-                 || (trialsInfo[curTrial] && trialsInfo[curTrial].spatiotemporalType === "incongruent")) { //swap
-                    //ball should show up behind the wrong occluder
-                    ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
-                 } else {
-                    //ball w shape shows up behind the correct occluder
-                    ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
-                 }
-                 responseAcceptable = true; // only allow response when the occluder is removed/equivalent time in no occluder condition
-                }, 1000);
-         }  else {
+            responseAcceptable = true; // only allow response when the occluder is removed/equivalent time in no occluder condition
+        }  else {
             myReq = requestAnimationFrame(() => animate(trial, trialVal));
             }
     }  
-    }, freshRate)
-    cancelAnimationFrame(myReq)
+    }, freshRate) 
+    // cancelAnimationFrame(myReq)
+}
+/* allows shapes to appear as soon as the occluder no longer covers them */
+function shapeAppearance(trial, trialVal) {
+    if (trial[trialVal].trialType === "OSPB") { //if the trial is OSPB
+        if ((trial[trialVal].diskLocation === "top" && trial[trialVal].spatiotemporalType === "congruent") ||
+         (trial[trialVal].diskLocation === "bottom" && trial[trialVal].spatiotemporalType === "incongruent")) { //if the disk should be at the top of the screen after it goes behind the occluder
+            //if top occluder above circle show image
+            if (occluderA.y + 120 < ballA.y) {
+                ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+            }
+        } else {
+            if (occluderB.y > ballA.y + 20) {
+                ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+            }
+        }
+    } else { //if MODAL
+        if (trial[trialVal].diskLocation === "top") {
+            if (occluderD.y + 120 < ballA.y) {
+                ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+            }
+        } else {
+            if (occluderE.y > ballA.y + 20) {
+                ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+            }
+        }
+    }
 }
 /* 
 Given value, chooses which of 5 shapes to display.
