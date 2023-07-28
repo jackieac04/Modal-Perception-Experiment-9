@@ -1,9 +1,9 @@
 //------Set up canvas begin---------
-const canvas_L = document.getElementById('canvas_L');
-const ctx_L = canvas_L.getContext('2d'); //determines the canvas to be 2D. 
-const halfCanvasWidth = canvas_L.width / 2; //half a canvas 
-const halfCanvasHeight = canvas_L.height / 2;
-canvas_L.height = canvas_L.height - 50;
+const canvasL = document.getElementById('canvasL');
+const ctxL = canvasL.getContext('2d'); //determines the canvas to be 2D. 
+const halfCanvasWidth = canvasL.width / 2; //half a canvas 
+const halfCanvasHeight = canvasL.height / 2;
+canvasL.height = canvasL.height - 50;
 
 //--------------------------------------
 //---------SET PARAMETERS BEGIN---------
@@ -96,10 +96,10 @@ function postData() {
       $("#instructions").text("Thank you! Please wait while your secret code is being generated. This may take up to 5 minutes...");  
   }
 
-let shape_A_preview_tmp;
-let shape_A_test_tmp;
-let vertical_tmp_A;
-let vertical_tmp_array = [-50,+50]; // positions the balls at the bottom of the screen 
+let shapeAPrevTMP;
+let shapeATestTMP;
+let verticalTMPA;
+let verticalTMPArray = [-50,+50]; // positions the balls at the bottom of the screen 
 
 /* generates nrepetitions of different types of trials and pushes them to trialsList
 location: the direction the disk moves in
@@ -190,13 +190,13 @@ function generateRandomNumbers(count, limit) {
 /* sets shapes on the disks.*/
 function setShape(count, limit, arrNumATest) {
     shapes = generateRandomNumbers(count, limit);
-    shape_A_preview_tmp = shapes[0];
-    shape_A_test_tmp = shapes[arrNumATest];
+    shapeAPrevTMP = shapes[0];
+    shapeATestTMP = shapes[arrNumATest];
 }
 /* sets the positions of disks at the bottom of the screen */
 function setTMP() { 
         vertical = generateRandomNumbers(2, 2) 
-        vertical_tmp_A = vertical_tmp_array[vertical[0]];
+        verticalTMPA = verticalTMPArray[vertical[0]];
     }
 /* pushes info about each trial to the database. */
 function pushTrialInfo(trialsList, trialType, diskLocation, spatioType, matchType) {
@@ -205,9 +205,9 @@ function pushTrialInfo(trialsList, trialType, diskLocation, spatioType, matchTyp
         "trialType": trialType,
         "diskLocation": diskLocation,
         "matchType": matchType,
-        "shape_A_pre_ind":shape_A_preview_tmp,
-        "shape_A_test_ind":shape_A_test_tmp,
-        "ball_A_vertical":vertical_tmp_A,
+        "shapeAPreInd":shapeAPrevTMP,
+        "shapeATestInd":shapeATestTMP,
+        "ballAVertical":verticalTMPA,
         "responseC": "null",
         "browser": getBrowser(),
         "subjectID": getSubjectID(),
@@ -232,9 +232,9 @@ let trialsInfo = []; //holds the information for the trials
 const nRepetitions = 51; //number of each type (3) of trial = 51 * 3 = 153 trials
 trialsInfo = trialGenerator(nRepetitions,trialsInfo); //generates the trials
 
-let trialsInfo_training = []; //holds info for training trials
-const nRepetitions_training = 1; //number of each type (3) of trial = 51* 3 = 3 trials
-trialsInfo_training = trialGenerator(nRepetitions_training,trialsInfo_training);
+let trialsInfoTraining = []; //holds info for training trials
+const nRepetitionsTraining = 1; //number of each type (3) of trial = 51* 3 = 3 trials
+trialsInfoTraining = trialGenerator(nRepetitionsTraining,trialsInfoTraining);
 const subjectID = getSubjectID();
 
 /* Disk properties are defined by Ball class and properties. */
@@ -246,12 +246,12 @@ class Ball {
         this.size = size;
     }
     /* draws disks on the canvas. */
-    draw_balls() {
-        ctx_L.beginPath();
-        ctx_L.strokeStyle = this.color;
-        ctx_L.lineWidth = 5;
-        ctx_L.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-        ctx_L.stroke();
+    drawBalls() {
+        ctxL.beginPath();
+        ctxL.strokeStyle = this.color;
+        ctxL.lineWidth = 5;
+        ctxL.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+        ctxL.stroke();
     }
     /* updates position of a disk depending on which type of trial it is and where it is moving to. */
   
@@ -330,10 +330,10 @@ class Occluder {
     }
 
     /* Draws occluders with the given specifications on the screen. */
-    draw_occluder() {
-        ctx_L.beginPath();
-        ctx_L.fillStyle = this.color;
-        ctx_L.fillRect(this.x, this.y, this.width, this.height);
+    drawOccluder() {
+        ctxL.beginPath();
+        ctxL.fillStyle = this.color;
+        ctxL.fillRect(this.x, this.y, this.width, this.height);
     }
 
     /* moves top occluder up offscreen and bottom occluder down offscreen*/
@@ -418,8 +418,8 @@ Styles the screen based on if the experiment is in the training session or the
 */
 function style(type, trial, trialVal) {
     if (type !== 'a') {
-        ctx_L.fillStyle = 'gray';
-        ctx_L.clearRect(0,0,canvas_L.width, canvas_L.height)
+        ctxL.fillStyle = 'gray';
+        ctxL.clearRect(0,0,canvasL.width, canvasL.height)
     } 
     if (type !== 'a' || 'b') {
         startTrialTime = new Date();
@@ -429,20 +429,20 @@ function style(type, trial, trialVal) {
     if (type === 'b') {
             $('#Instruction2').hide();
     }
-    $('#canvas_L').show();
+    $('#canvasL').show();
     if (trial[trialVal].trialType === "OSPB") {
         //draw 2 occluders
         occluderA = generateNewOccluder(100, halfCanvasHeight-225)
         occluderB = generateNewOccluder(100, halfCanvasHeight-100)
-        occluderA.draw_occluder()
-        occluderB.draw_occluder()
+        occluderA.drawOccluder()
+        occluderB.drawOccluder()
     } else {
         occluderD = generateNewOccluder(100, halfCanvasHeight-225)
         occluderE = generateNewOccluder(100, halfCanvasHeight-100)
         occluderC = generateNewOccluder(225, halfCanvasHeight-225)
-        occluderC.draw_occluder()
+        occluderC.drawOccluder()
     }
-    ballA.draw_balls();
+    ballA.drawBalls();
    
     stimuliPreview(trial, trialVal); 
 }
@@ -455,15 +455,15 @@ function showTrials(type) {
         case 'a':
             instructions('#title', '#Instruction2', '#startTrainingButton', 'a')
             ballA = generateNewBallsHelper(AWidth, AHeight);
-            style('a', trialsInfo_training, trainingTrial)
+            style('a', trialsInfoTraining, trainingTrial)
             break;
 
         case 'b':
             instructions('#Instruction4', '#nextTrainingTrialButton', null, 'b')
     
-            if (trainingTrial < trialsInfo_training.length) {
+            if (trainingTrial < trialsInfoTraining.length) {
                 ballA = generateNewBallsHelper(AWidth, AHeight);
-                style('b', trialsInfo_training, trainingTrial)
+                style('b', trialsInfoTraining, trainingTrial)
             } else {
                 $('#InstructionPractice').hide();
                 $('#Instruction3').show();
@@ -494,28 +494,27 @@ function showTrials(type) {
 let myTimeout10;
 let myTimeout11;
 let myTimeout12;
-let shapeInd_A_pre;
-let shapeInd_A_test;
-let shapeInd_B_pre;
-let shapeInd_B_test;
+let shapeIndAPre;
+let shapeIndATest;
+let shapeIndBPre;
 const colorDisk = 500; 
 const previewShape = 1200; //length the shapes appear for each trial in milliseconds
 
 async function stimuliPreview(trial, trialVal) { // the phases before the disks and shapes move
     await new Promise((resolve) => {
     myTimeout10 = setTimeout(function () {
-        if (trainingTrial <= trialsInfo_training.length - 1) {
-          shapeInd_A_pre = trialsInfo_training[trainingTrial].shape_A_pre_ind;
+        if (trainingTrial <= trialsInfoTraining.length - 1) {
+          shapeIndAPre = trialsInfoTraining[trainingTrial].shapeAPreInd;
         }
-        if (trainingTrial === trialsInfo_training.length && curTrial >= 0) {
-          shapeInd_A_pre = trialsInfo[curTrial].shape_A_pre_ind;
+        if (trainingTrial === trialsInfoTraining.length && curTrial >= 0) {
+          shapeIndAPre = trialsInfo[curTrial].shapeAPreInd;
         }
-        shapeTmp = animationHelper(shapeInd_A_pre);
-        ctx_L.drawImage(shapeTmp, ballA.x - 27, ballA.y - 27);
-        shapeTmp = animationHelper(shapeInd_B_pre);
+        shapeTmp = animationHelper(shapeIndAPre);
+        ctxL.drawImage(shapeTmp, ballA.x - 27, ballA.y - 27);
+        shapeTmp = animationHelper(shapeIndBPre);
   
         myTimeout11 = setTimeout(function () {
-          ballA.draw_balls();
+          ballA.drawBalls();
   
           myTimeout12 = setTimeout(function () {
             animate(trial, trialVal);
@@ -525,7 +524,7 @@ async function stimuliPreview(trial, trialVal) { // the phases before the disks 
       }, colorDisk);
     });
   }
-let refresh_stimuliOnset_test = 0; //DO NOT make these const - even though they don't change it causes the occluder to disappear
+let refresh = 0; //DO NOT make these const - even though they don't change it causes the occluder to disappear
 let myTimeout;
 let myReq;
 let startResponseTiming = false;
@@ -534,63 +533,63 @@ let startResponseTiming = false;
 
 function animate(trial, trialVal) { // make the disks and the shapes move together and occluders move off screen 
     myTimeout = setTimeout (async function() {     
-    ctx_L.fillStyle = 'gray';
-    ctx_L.clearRect(0,0,canvas_L.width, canvas_L.height);
+    ctxL.fillStyle = 'gray';
+    ctxL.clearRect(0,0,canvasL.width, canvasL.height);
     
-if (trainingTrial < trialsInfo_training.length) {
-    vertical_tmp_A = trialsInfo_training[trainingTrial].ball_A_vertical;
+if (trainingTrial < trialsInfoTraining.length) {
+    verticalTMPA = trialsInfoTraining[trainingTrial].ballAVertical;
 }
-if (trainingTrial === trialsInfo_training.length && curTrial < trialsInfo.length) {
-    vertical_tmp_A = trialsInfo[curTrial].ball_A_vertical;
+if (trainingTrial === trialsInfoTraining.length && curTrial < trialsInfo.length) {
+    verticalTMPA = trialsInfo[curTrial].ballAVertical;
 }
-    ballA.draw_balls();
+    ballA.drawBalls();
     ballA.updatePosition(trial, trialVal);
-    refresh_stimuliOnset_test ++;
+    refresh ++;
     
-    if (refresh_stimuliOnset_test < 76) {
+    if (refresh < 76) {
         //keeps occluders on screen while disk moves
         if (trial[trialVal].trialType === "OSPB") {
-            occluderA.draw_occluder()
-            occluderB.draw_occluder()
+            occluderA.drawOccluder()
+            occluderB.drawOccluder()
         } else {
-            occluderC.draw_occluder()
+            occluderC.drawOccluder()
         }
         myReq = requestAnimationFrame(() => animate(trial, trialVal));
     
-    } else { //after this period, occluder becomes two occluders(MODAL) then move offscreen (OSPB + MODAL)
+    } else { //after this period, occluder becomes two occluders (MODAL) then move offscreen (OSPB + MODAL)
             // moves top one up, bottom one down
             await ballA.updateCongruence(trial, trialVal);
 
             if (trial[trialVal].trialType === "OSPB"){
-            occluderA.draw_occluder();
-            occluderB.draw_occluder();
-            occluderA.updatePosition();
-            occluderB.updatePosition();
+                occluderA.drawOccluder();
+                occluderB.drawOccluder();
+                occluderA.updatePosition();
+                occluderB.updatePosition();
         } else {
-            occluderD.draw_occluder()
-            occluderE.draw_occluder()
-            occluderD.updatePosition() //why do these calls not work?
-            occluderE.updatePosition()
+                occluderD.drawOccluder();
+                occluderE.drawOccluder();
+                occluderD.updatePosition();
+                occluderE.updatePosition();
         }
-       if (trainingTrial < trialsInfo_training.length) {
-            shapeInd_A_test = trialsInfo_training[trainingTrial].shape_A_test_ind;
+       if (trainingTrial < trialsInfoTraining.length) {
+            shapeIndATest = trialsInfoTraining[trainingTrial].shapeATestInd;
         }
 
-        if (trainingTrial >= trialsInfo_training.length && curTrial >=0) {
-            shapeInd_A_test = trialsInfo[curTrial].shape_A_test_ind;
+        if (trainingTrial >= trialsInfoTraining.length && curTrial >=0) {
+            shapeIndATest = trialsInfo[curTrial].shapeATestInd;
         }
-        shapeTmpA = animationHelper(shapeInd_A_test)
+        shapeTmpA = animationHelper(shapeIndATest)
 
-         if (refresh_stimuliOnset_test === 100) { 
+         if (refresh === 100) { 
 
             setTimeout(function() {
-                if ((trialsInfo_training[trainingTrial] && trialsInfo_training[trainingTrial].spatiotemporalType === "incongruent")
+                if ((trialsInfoTraining[trainingTrial] && trialsInfoTraining[trainingTrial].spatiotemporalType === "incongruent")
                  || (trialsInfo[curTrial] && trialsInfo[curTrial].spatiotemporalType === "incongruent")) { //swap
                     //ball should show up behind the wrong occluder
-                    ctx_L.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+                    ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
                  } else {
                     //ball w shape shows up behind the correct occluder
-                    ctx_L.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+                    ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
                  }
                  responseAcceptable = true; // only allow response when the occluder is removed/equivalent time in no occluder condition
                 }, 1000);
@@ -634,13 +633,13 @@ if (responseAcceptable === true) {
         endTrialTime = new Date();
         window.cancelAnimationFrame(myReq);
         clearTimeout(myTimeout);
-        refresh_stimuliOnset_test = 0;
-        $('#canvas_L').hide();
+        refresh = 0;
+        $('#canvasL').hide();
         $('#Instruction4').show();
-        if (trainingTrial <= trialsInfo_training.length-1) {
+        if (trainingTrial <= trialsInfoTraining.length-1) {
             $('#nextTrainingTrialButton').show();
         } 
-        if (trainingTrial === trialsInfo_training.length && curTrial>=0) {
+        if (trainingTrial === trialsInfoTraining.length && curTrial>=0) {
             $('#nextTrialButton').show();
         }
         ballA.x = halfCanvasWidth-230;

@@ -34,7 +34,7 @@ button {
     max-width: 50%; 
     margin: 0 auto;
 }
-#canvas_L, #canvas_2 {
+#canvasL {
     display: none;
     background-color: gray;
 }
