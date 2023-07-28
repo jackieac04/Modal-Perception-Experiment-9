@@ -137,9 +137,9 @@ function trialGenerator(nRepetitions,trialsList) {
         pushTrialInfo(trialsList, "OSPB", "bottom", "congruent", "new")
     }
     for (let i = 0; i < nRepetitions; i++) { //bottom,incongruent,match,OSPB
-        setShape(2,5,1)
+        setShape(1,5,0)
         setTMP()
-        pushTrialInfo(trialsList, "OSPB", "bottom", "incongruent", "new") 
+        pushTrialInfo(trialsList, "OSPB", "bottom", "incongruent", "match") 
     }
 
     //MODAL TRIALS (wonky movement- the location of the disks is unknown at the beginning, then the occluder splits in two)
@@ -559,8 +559,11 @@ if (trainingTrial === trialsInfoTraining.length && curTrial < trialsInfo.length)
         } else {
                 occluderD.drawOccluder();
                 occluderE.drawOccluder();
-                occluderD.updatePosition();
-                occluderE.updatePosition();
+                setTimeout(function () {
+                    occluderD.updatePosition();
+                    occluderE.updatePosition();
+                  }, 500);
+                
         }
        if (trainingTrial < trialsInfoTraining.length) {
             shapeIndATest = trialsInfoTraining[trainingTrial].shapeATestInd;
@@ -572,14 +575,13 @@ if (trainingTrial === trialsInfoTraining.length && curTrial < trialsInfo.length)
         shapeTmpA = animationHelper(shapeIndATest)
         shapeAppearance(trial, trialVal)
 
-         if (refresh === 100) { 
+         if (refresh === 150) { 
             responseAcceptable = true; // only allow response when the occluder is removed/equivalent time in no occluder condition
         }  else {
             myReq = requestAnimationFrame(() => animate(trial, trialVal));
             }
     }  
     }, freshRate) 
-    // cancelAnimationFrame(myReq)
 }
 /* allows shapes to appear as soon as the occluder no longer covers them */
 function shapeAppearance(trial, trialVal) {
@@ -589,20 +591,24 @@ function shapeAppearance(trial, trialVal) {
             //if top occluder above circle show image
             if (occluderA.y + 120 < ballA.y) {
                 ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+                responseAcceptable = true;
             }
         } else {
             if (occluderB.y > ballA.y + 20) {
                 ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+                responseAcceptable = true;
             }
         }
     } else { //if MODAL
         if (trial[trialVal].diskLocation === "top") {
             if (occluderD.y + 120 < ballA.y) {
                 ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+                responseAcceptable = true;
             }
         } else {
             if (occluderE.y > ballA.y + 20) {
                 ctxL.drawImage(shapeTmpA, ballA.x-27, ballA.y-27);
+                responseAcceptable = true;
             }
         }
     }
